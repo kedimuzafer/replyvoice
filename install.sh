@@ -75,7 +75,7 @@ echo ""
 
 # Resolve latest version
 info "Fetching latest version..."
-VERSION="$(fetch_text "https://api.github.com/repos/${REPO}/releases/latest" \
+VERSION="$(fetch_text "https://api.github.com/repos/${REPO}/releases" \
   | grep '"tag_name"' | head -1 | sed 's/.*"tag_name": *"\([^"]*\)".*/\1/')"
 [ -z "$VERSION" ] && die "Could not fetch latest version. Check: https://github.com/${REPO}/releases"
 ok "Version: $VERSION"
