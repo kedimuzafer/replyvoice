@@ -141,7 +141,8 @@ else
   mv "$TMP_DIR/extract/${APP_NAME}" "$OPT_DIR"
 
   mkdir -p "$BIN_DIR" "$DESK_DIR" "$ICON_DIR"
-  ln -sf "$OPT_DIR/bin/${BINARY_NAME}" "$BIN_DIR/${BINARY_NAME}"
+  printf '#!/bin/sh\nexec "%s/bin/%s-bin" "$@"\n' "$OPT_DIR" "$BINARY_NAME" > "$BIN_DIR/$BINARY_NAME"
+  chmod +x "$BIN_DIR/$BINARY_NAME"
 
   [ -f "$OPT_DIR/share/applications/${APP_NAME}.desktop" ] && \
     sed "s|Exec=.*|Exec=${BIN_DIR}/${BINARY_NAME}|" \
