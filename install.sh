@@ -156,6 +156,16 @@ else
   command -v update-desktop-database >/dev/null 2>&1 && \
     update-desktop-database "$DESK_DIR" 2>/dev/null || true
 
+  # Desktop shortcut
+  DESKTOP_HOME="$HOME/Desktop"
+  [ -d "$HOME/Masaüstü" ] && DESKTOP_HOME="$HOME/Masaüstü"
+  [ -d "$HOME/桌面" ] && DESKTOP_HOME="$HOME/桌面"
+  if [ -f "$DESK_DIR/${APP_NAME}.desktop" ] && [ -d "$DESKTOP_HOME" ]; then
+    cp "$DESK_DIR/${APP_NAME}.desktop" "$DESKTOP_HOME/${APP_NAME}.desktop"
+    chmod +x "$DESKTOP_HOME/${APP_NAME}.desktop"
+    ok "Desktop shortcut created"
+  fi
+
   ok "Installed: $OPT_DIR"
   ok "Binary: $BIN_DIR/$BINARY_NAME"
 
@@ -167,7 +177,22 @@ else
       printf "  ${BOLD}export PATH=\"\$PATH:$BIN_DIR\"${NC}\n"
       ;;
   esac
+
 fi
 
 echo ""
 printf "${GREEN}${BOLD}ReplyVoice $VERSION installed successfully.${NC}\n\n"
+
+# macOS desktop shortcut + launch
+if [ "$OS" = "Darwin" ]; then
+  [ -d "$DEST" ] && [ -d "$HOME/Desktop" ] && \
+    ln -sf "$DEST" "$HOME/Desktop/$(basename "$DEST")" 2>/dev/null && \
+    ok "Desktop shortcut created"
+  info "Launching ReplyVoice..."
+  open "$DEST" 2>/dev/null &
+
+# Linux launch (tarball only — deb/rpm already have launcher)
+elif [ "$PKG_FORMAT" = "tar" ] && [ -n "${BIN_DIR:-}" ] && [ -x "$BIN_DIR/$BINARY_NAME" ]; then
+  info "Launching ReplyVoice..."
+  nohup "$BIN_DIR/$BINARY_NAME" >/dev/null 2>&1 &
+fi
